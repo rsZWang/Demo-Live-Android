@@ -10,6 +10,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.userstar.livedemo.R
 import com.userstar.livedemo.ui.main.viewModel.Review
+import org.greenrobot.eventbus.EventBus
 
 class ReviewFragment : Fragment() {
 
@@ -25,7 +26,7 @@ class ReviewFragment : Fragment() {
         lifecycle.addObserver(youTubePlayerView)
         youTubePlayerView.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
-                youTubePlayer.loadVideo(review.id, 0F)
+                youTubePlayer.loadVideo(review.id!!, 0F)
             }
         })
 

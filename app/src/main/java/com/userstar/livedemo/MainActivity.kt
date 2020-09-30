@@ -38,8 +38,6 @@ class MainActivity : AppCompatActivity() {
                     Timber.i("FCM subscribe topic: ${task.isSuccessful}")
                 }
 
-            EventBus.getDefault().register(this)
-
             supportFragmentManager.beginTransaction()
                     .replace(R.id.container, MainFragment.newInstance())
                     .commitNow()
@@ -49,14 +47,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(review: Review) {
-        AlertDialog.Builder(this)
-            .setMessage("${review.title}\n${review.time}\n${review.id}\n${review.thumbnailUri}")
-            .setPositiveButton("OK", null)
-            .show()
     }
 
     internal object CustomNotification {

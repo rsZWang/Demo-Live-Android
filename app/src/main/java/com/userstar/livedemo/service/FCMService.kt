@@ -8,11 +8,6 @@ import timber.log.Timber
 
 class FCMService : FirebaseMessagingService() {
 
-    override fun onCreate() {
-        super.onCreate()
-
-    }
-
     override fun onNewToken(token: String) {
         super.onNewToken(token)
     }
@@ -25,10 +20,10 @@ class FCMService : FirebaseMessagingService() {
 
         EventBus.getDefault().post(
             Review(
-                dataMap["title"] ?: "NULL",
-                dataMap["time"] ?: "NULL",
-                dataMap["id"] ?: "NULL",
-                dataMap["thumbnailUri"] ?: "NULL"
+                dataMap["title"],
+                dataMap["time"],
+                dataMap["id"],
+                true
             )
         )
     }

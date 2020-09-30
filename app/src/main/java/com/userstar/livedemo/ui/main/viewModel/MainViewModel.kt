@@ -10,14 +10,14 @@ import androidx.lifecycle.ViewModelProvider
 class MainViewModel : ViewModel() {
     val reviewList = loadReviewList()
 
-    private fun loadReviewList() : LiveData<List<Review>> {
-        val liveData = MutableLiveData<List<Review>>()
+    private fun loadReviewList() : LiveData<ArrayList<Review>> {
+        val liveData = MutableLiveData<ArrayList<Review>>()
 
         val idList = listOf("xxcTXbWFD1k", "zQcCjoSRyyA", "R6GPb2aDpGg", "R-xyfF3Sjw0")
 
         val list = ArrayList<Review>()
         for (i in 1 .. 4) {
-            list.add(Review("精彩回顧 - ${i}", "11:${i}0", idList[i-1], "精彩回顧 - ${i}"))
+            list.add(Review("精彩回顧 - ${i}", "11:${i}0:00", idList[i-1]))
         }
         liveData.postValue(list)
 
@@ -26,24 +26,23 @@ class MainViewModel : ViewModel() {
 }
 
 data class Review(
-    val title: String,
-    val time: String,
-    val id: String,
-    val thumbnailUri: String
+    val title: String? = "NULL",
+    val time: String? = "NULL",
+    val id: String? = "NULL",
+    var isNew: Boolean = false
 ) : Parcelable {
-
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.readString()!!
+        parcel.readByte() != 0.toByte()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)
         parcel.writeString(time)
         parcel.writeString(id)
-        parcel.writeString(thumbnailUri)
+        parcel.writeByte(if (isNew) 1 else 0)
     }
 
     override fun describeContents(): Int {
