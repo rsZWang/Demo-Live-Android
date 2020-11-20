@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
@@ -12,7 +13,12 @@ import com.userstar.livedemo.R
 import com.userstar.livedemo.ui.main.viewModel.Review
 import org.greenrobot.eventbus.EventBus
 
-class ReviewFragment : Fragment() {
+class ReviewFragment : DialogFragment() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, android.R.style.Theme_Light_NoTitleBar_Fullscreen)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -21,7 +27,6 @@ class ReviewFragment : Fragment() {
         val view = inflater.inflate(R.layout.review_fragment, container, false)
 
         val review: Review = requireArguments().getParcelable("review")!!
-
         val youTubePlayerView: YouTubePlayerView = view.findViewById(R.id.youtube_player_view)
         lifecycle.addObserver(youTubePlayerView)
         youTubePlayerView.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {

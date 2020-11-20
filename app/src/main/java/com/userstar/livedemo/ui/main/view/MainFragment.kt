@@ -1,13 +1,12 @@
 package com.userstar.livedemo.ui.main.view
 
-import android.app.AlertDialog
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,6 +17,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.squareup.picasso.Picasso
+import com.userstar.livedemo.MainActivity
 import com.userstar.livedemo.R
 import com.userstar.livedemo.ui.main.viewModel.MainViewModel
 import com.userstar.livedemo.ui.main.viewModel.MainViewModelFactory
@@ -26,13 +26,21 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import timber.log.Timber
-import java.util.ArrayList
+import java.util.*
 
 
 class MainFragment : Fragment() {
 
     companion object {
         fun newInstance() = MainFragment()
+
+        var fragment: MainFragment? = null
+        fun instance() : MainFragment {
+            if (fragment == null) {
+                fragment = MainFragment()
+            }
+            return fragment as MainFragment
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,9 +67,13 @@ class MainFragment : Fragment() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 super.onReady(youTubePlayer)
                 player = youTubePlayer
-                player?.loadVideo("jrKKZZ2gBHg", 0F)
+                player?.loadVideo("63RmMXCd_bQ", 0F)
             }
         })
+        youTubePlayerView.getPlayerUiController().apply {
+            enableLiveVideoUi(true)
+            showFullscreenButton(false)
+        }
 
         reviewListRecyclerViewAdapter = ReviewListRecyclerViewAdapter()
         val reviewListRecyclerView = view.findViewById<RecyclerView>(R.id.review_list_recyclerView)
@@ -86,6 +98,11 @@ class MainFragment : Fragment() {
         }
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        Timber.i("onViewStateRestored")
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
@@ -95,7 +112,18 @@ class MainFragment : Fragment() {
     fun onMessageEvent(review: Review) {
         reviewListRecyclerViewAdapter.reviewList.add(0, review)
         reviewListRecyclerViewAdapter.notifyDataSetChanged()
+
+        Toast.makeText(requireContext(), "精彩回顧", Toast.LENGTH_LONG).show()
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(orientation: MainActivity.Orientation) {
+        when (orientation) {
+            MainActivity.Orientation.LANDSCAPE -> youTubePlayerView.enterFullScreen()
+            MainActivity.Orientation.PORTRAIT -> youTubePlayerView.exitFullScreen()
+        }
+    }
+
 
     inner class ReviewListRecyclerViewAdapter : RecyclerView.Adapter<ReviewListRecyclerViewAdapter.ViewHolder>() {
 
@@ -112,6 +140,7 @@ class MainFragment : Fragment() {
                 .into(holder.thumbnailImageView)
             holder.titleTextView.text = reviewList[position].title
             holder.timeTextView.text = reviewList[position].time
+            Timber.i("$position: ${reviewList[position].isNew}")
             if (reviewList[position].isNew) {
                 holder.isNewHintTextView.visibility = View.VISIBLE
             }
@@ -124,12 +153,14 @@ class MainFragment : Fragment() {
 
                 val fragment = ReviewFragment()
                 fragment.arguments = args
+                fragment.show(parentFragmentManager, "")
 
-                parentFragmentManager.beginTransaction()
-                    .add(R.id.container, fragment)
-                    .addToBackStack("ReviewFragment")
-                    .commit()
+//                parentFragmentManager.beginTransaction()
+//                    .add(R.id.container, fragment)
+//                    .addToBackStack("ReviewFragment")
+//                    .commit()
             }
+            holder.setIsRecyclable(false)
         }
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

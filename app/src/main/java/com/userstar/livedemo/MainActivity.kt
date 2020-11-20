@@ -1,21 +1,23 @@
 package com.userstar.livedemo
 
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.userstar.livedemo.ui.main.view.MainFragment
-import com.userstar.livedemo.ui.main.viewModel.Review
 import com.userstar.phonekeyblelockdemokotlin.timber.ReleaseTree
 import com.userstar.phonekeyblelockdemokotlin.timber.ThreadIncludedDebugTree
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -39,14 +41,36 @@ class MainActivity : AppCompatActivity() {
                 }
 
             supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, MainFragment.newInstance())
+                    .replace(R.id.container, MainFragment.instance())
                     .commitNow()
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        EventBus.getDefault().unregister(this)
+    enum class Orientation {
+        LANDSCAPE,
+        PORTRAIT
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                window.setDecorFitsSystemWindows(false)
+            } else {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+            }
+            supportActionBar!!.hide()
+            EventBus.getDefault().post(Orientation.LANDSCAPE)
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                window.setDecorFitsSystemWindows(true)
+            } else {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+            }
+            supportActionBar!!.show()
+            EventBus.getDefault().post(Orientation.PORTRAIT)
+        }
     }
 
     internal object CustomNotification {
