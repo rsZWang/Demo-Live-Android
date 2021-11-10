@@ -1,6 +1,7 @@
-package com.userstar.phonekeyblelockdemokotlin.timber
+package com.userstar.livedemo.timber
 
 import android.util.Log
+import com.userstar.livedemo.timber.ThreadIncludedDebugTree
 
 class ReleaseTree : ThreadIncludedDebugTree() {
     override fun isLoggable(tag: String?, priority: Int): Boolean {

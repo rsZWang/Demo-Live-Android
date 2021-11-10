@@ -15,8 +15,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.userstar.livedemo.ui.main.view.MainFragment
-import com.userstar.phonekeyblelockdemokotlin.timber.ReleaseTree
-import com.userstar.phonekeyblelockdemokotlin.timber.ThreadIncludedDebugTree
+import com.userstar.livedemo.timber.ReleaseTree
+import com.userstar.livedemo.timber.ThreadIncludedDebugTree
 import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
 
